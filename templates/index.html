@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Browser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Browsing: /{{ path }}</h1>
+    <ul>
+        {% if path %}
+        <li><a href="{{ url_for('index', subpath=path.rsplit('/', 1)[0]) }}" class="up-link">.. (up)</a></li>
+        {% endif %}
+        {% for dir in dirs %}
+        <li class="dir"><a href="{{ url_for('index', subpath=path + '/' + dir) }}">{{ dir }}/</a></li>
+        {% endfor %}
+        {% for file in files %}
+        <li class="file"><a href="{{ url_for('index', subpath=path + '/' + file) }}">{{ file }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
