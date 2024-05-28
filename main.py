@@ -1,7 +1,6 @@
 import os
 import re
 import subprocess
-
 from flask import Flask, render_template, send_from_directory, abort, url_for, request, redirect, send_file
 
 app = Flask(__name__)
@@ -9,9 +8,7 @@ app = Flask(__name__)
 # 设置根目录，可以根据需要更改
 ROOT_DIR = os.path.abspath("/SUMMER")
 
-
 def get_video_info(file_path):
-
     app.logger.info(file_path)
 
     # 获取视频文件大小
@@ -19,12 +16,11 @@ def get_video_info(file_path):
 
     try:
         # Run ffmpeg command
-        result = subprocess.run(['ffmpeg', '-i', file_path], stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
-                                encoding='utf-8')
+        result = subprocess.run(['ffmpeg', '-i', file_path], stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, encoding='utf-8')
         output = result.stderr
 
         # Use regular expressions to extract video duration
-        duration_match = re.search(r"Duration: (\d+:\d+:\d+\.\d+)", output)
+        duration_match = re.search(r"Duration: (\d+:\d+:\d+)", output)
         if duration_match:
             duration = duration_match.group(1)
         else:
@@ -45,10 +41,6 @@ def get_video_info(file_path):
         print(f"获取视频信息时出错: {e}")
         return None, None, None
 
-
-app.add_template_global(get_video_info, 'get_video_info')
-
-
 @app.route('/download/<path:subpath>')
 def download(subpath):
     file_path = os.path.join(ROOT_DIR, subpath)
@@ -57,19 +49,17 @@ def download(subpath):
     else:
         return 'File not found', 404
 
-
 @app.route('/delete/<path:subpath>', methods=['POST'])
 def delete(subpath):
     if request.method == 'POST':
         file_path = os.path.join(ROOT_DIR, subpath)
         if os.path.exists(file_path):
             os.remove(file_path)
-            return redirect(url_for('index'))  # 删除成功后重定向到 index 页面
+            return redirect(url_for('index', subpath=subpath.rsplit('/', 1)[0]))  # 删除成功后重定向到上一级目录
         else:
             return 'File not found', 404
     else:
         return 'Method not allowed', 405
-
 
 @app.route('/')
 @app.route('/<path:subpath>')
@@ -96,11 +86,10 @@ def index(subpath=''):
             else:
                 files.append(item)
 
-        return render_template('index.html', path=subpath, dirs=dirs, files=files)
+        return render_template('index.html', path=subpath, dirs=dirs, files=files, os=os, get_video_info=get_video_info, ROOT_DIR=ROOT_DIR)
 
     # 如果路径既不是文件也不是目录，返回404
     abort(404)
-
 
 @app.route('/preview/<path:subpath>')
 def preview(subpath):
@@ -120,7 +109,6 @@ def preview(subpath):
 
     abort(415)  # 不支持的文件类型
 
-
 if __name__ == '__main__':
     # 修改 host 参数为 '0.0.0.0' 以允许局域网访问，端口为8080
-    app.run(debug=True ,host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=8080)
