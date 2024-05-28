@@ -6,6 +6,7 @@ app = Flask(__name__)
 # 设置根目录，可以根据需要更改
 ROOT_DIR = os.path.abspath("/SUMMER")
 
+
 @app.route('/download/<path:subpath>')
 def download(subpath):
     file_path = os.path.join(ROOT_DIR, subpath)
