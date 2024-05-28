@@ -11,42 +11,76 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
+
         h1 {
             color: #333;
         }
+
         ul {
             list-style-type: none;
             padding: 0;
         }
+
         li {
             margin: 5px 0;
         }
+
         a {
             text-decoration: none;
             color: #007BFF;
         }
+
         a:hover {
             text-decoration: underline;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         .up-link {
             font-weight: bold;
         }
+
         .dir, .file {
             padding: 10px;
             border-radius: 5px;
         }
+
         .dir {
             background-color: #e7f1ff;
         }
+
         .file {
             background-color: #f7f7f7;
+        }
+
+        /* 添加样式以美化删除按钮 */
+        .delete-btn {
+            background-color: #ff5c5c;
+            color: #fff;
+            border: none;
+            padding: 3px 6px;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #ff0000;
+        }
+
+        .download-btn {
+            background-color: #eed039;
+
+        }
+
+        .white {
+            color: white;
         }
     </style>
 </head>
@@ -63,7 +97,12 @@
         {% for file in files %}
         <li class="file">
             <a href="{{ url_for('index', subpath=path + '/' + file) }}">{{ file }}</a>
-            - <a href="{{ url_for('preview', subpath=path + '/' + file) }}">预览</a>
+            <!--            - <a href="{{ url_for('preview', subpath=path + '/' + file) }}">预览</a>-->
+            <button class="delete-btn download-btn"><a class="white"
+                    href="{{ url_for('download', subpath=path + '/' + file) }}">下载</a></button>
+            <form action="{{ url_for('delete', subpath=path + '/' + file) }}" method="post">
+                <input class="delete-btn" type="submit" value="删除">
+            </form>
         </li>
         {% endfor %}
     </ul>

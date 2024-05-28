@@ -1,10 +1,30 @@
 import os
-from flask import Flask, render_template, send_from_directory, abort, url_for
-
+from flask import Flask, render_template, send_from_directory, abort, url_for, request, redirect, send_file
+from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # 设置根目录，可以根据需要更改
 ROOT_DIR = os.path.abspath("/SUMMER")
+
+@app.route('/download/<path:subpath>')
+def download(subpath):
+    file_path = os.path.join(ROOT_DIR, subpath)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return 'File not found', 404
+
+@app.route('/delete/<path:subpath>', methods=['POST'])
+def delete(subpath):
+    if request.method == 'POST':
+        file_path = os.path.join(ROOT_DIR, subpath)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return redirect(url_for('index'))  # 删除成功后重定向到 index 页面
+        else:
+            return 'File not found', 404
+    else:
+        return 'Method not allowed', 405
 
 @app.route('/')
 @app.route('/<path:subpath>')
