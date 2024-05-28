@@ -103,12 +103,14 @@
         {% for file in files %}
         <li class="file">
             <a href="{{ url_for('index', subpath=path + '/' + file) }}">{{ file }}</a>
+
             <div class="button-group">
                 <form action="{{ url_for('delete', subpath=path + '/' + file) }}" method="post">
                     <input class="delete-btn" type="submit" value="删除">
                 </form>
                 <button class="delete-btn download-btn"><a class="white"
-                                                           href="{{ url_for('download', subpath=path + '/' + file) }}">下载</a></button>
+                                                           href="{{ url_for('download', subpath=path + '/' + file) }}">下载</a>
+                </button>
 
             </div>
         </li>
