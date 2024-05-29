@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .up-link {
+            font-weight: bold;
+        }
+
+        .dir, .file {
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .dir {
+            background-color: #e7f1ff;
+        }
+
+        .file {
+            background-color: #f7f7f7;
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .delete-btn, .download-btn {
+            background-color: #ff5c5c;
+            color: #fff;
+            border: none;
+            padding: 3px 6px;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .delete-btn:hover, .download-btn:hover {
+            background-color: #ff0000;
+        }
+
+        .download-btn {
+            background-color: #eed039;
+        }
+
+        .white {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Browsing: /{{ path }}</h1>
+    <ul>
+        {% if path %}
+        <li><a href="{{ url_for('index', subpath=path.rsplit('/', 1)[0]) }}" class="up-link">.. (up)</a></li>
+        {% endif %}
+        {% for dir in dirs %}
+        <li class="dir"><a href="{{ url_for('index', subpath=path + '/' + dir) }}">{{ dir }}/</a></li>
+        {% endfor %}
+        {% for file in files %}
+        <li class="file">
+            <div style="display: flex; align-items: center;">
+                <a href="{{ url_for('index', subpath=path + '/' + file) }}">{{ file }}</a>
+                {% if file.endswith(('.mp4', '.avi', '.mov', '.mkv')) %}
+                {% set file_info = get_video_info(os.path.join(ROOT_DIR, path, file)) %}
+                {% if file_info %}
+                {% set file_size_mb = file_info[0] / (1024 * 1024) %}
+                <span style="margin-left: 10px; font-size: 12px; color: #777; word-break: break-all;">
+                    (大小: {{ '%.2f' | format(file_size_mb) }} MB, 时长: {{ file_info[1] }}, 分辨率: {{ file_info[2] }})
+                </span>
+                {% endif %}
+                {% else %}
+                {% set file_size = os.path.getsize(os.path.join(ROOT_DIR, path, file)) %}
+                <span style="margin-left: 10px; font-size: 12px; color: #777;">
+                    (Size: {{ file_size }} bytes)
+                </span>
+                {% endif %}
+                <div class="button-group">
+                    <form action="{{ url_for('delete', subpath=path + '/' + file) }}" method="post">
+                        <input class="delete-btn" type="submit" value="删除">
+                    </form>
+                    <button class="delete-btn download-btn">
+                        <a class="white" href="{{ url_for('download', subpath=path + '/' + file) }}">下载</a>
+                    </button>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
