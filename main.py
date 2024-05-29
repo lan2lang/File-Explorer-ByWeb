@@ -6,7 +6,7 @@ from flask import Flask, render_template, send_from_directory, abort, url_for, r
 app = Flask(__name__)
 
 # 设置根目录，可以根据需要更改
-ROOT_DIR = os.path.abspath("/SUMMER")
+ROOT_DIR = os.path.abspath("/")
 
 def get_video_info(file_path):
     app.logger.info(file_path)

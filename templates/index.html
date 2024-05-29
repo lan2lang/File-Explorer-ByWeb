@@ -105,8 +105,9 @@
                 {% if file.endswith(('.mp4', '.avi', '.mov', '.mkv')) %}
                 {% set file_info = get_video_info(os.path.join(ROOT_DIR, path, file)) %}
                 {% if file_info %}
+                {% set file_size_mb = file_info[0] / (1024 * 1024) %}
                 <span style="margin-left: 10px; font-size: 12px; color: #777; word-break: break-all;">
-                    (大小: {{ file_info[0] }} bytes, 时长: {{ file_info[1] }}, 分辨率: {{ file_info[2] }})
+                    (大小: {{ '%.2f' | format(file_size_mb) }} MB, 时长: {{ file_info[1] }}, 分辨率: {{ file_info[2] }})
                 </span>
                 {% endif %}
                 {% else %}
